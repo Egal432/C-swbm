@@ -60,12 +60,79 @@ class SimpleWaterBalanceModel:
         self.snow = None
         self.length = None
         self.data = None
+        self.temp = None
         
     def load_data(self, filepath):
         """Load and preprocess ERA5 data from CSV file."""
         raw_data = pd.read_csv(filepath)
         self.data = prepro(raw_data)
         return self.data
+    
+    def process_snow(self, precip, rad, temp):
+        """
+        Account for snow accumulation and melting, converting precipitation 
+        to rainfall + snow melt + dew melt.
+        
+        Parameters
+        ----------
+        precip : array
+            Precipitation data (mm)
+        rad : array
+            Radiation data (mm water equivalent)
+        temp : array
+            Temperature data (degrees C)
+            
+        Returns
+        -------
+        precip : array
+            Modified precipitation (includes snowmelt)
+        rad : array
+            Modified radiation (negative values set to zero)
+        snow : array
+            Snow accumulation over time
+        """
+        length = len(precip)
+        snow = np.zeros(length)
+        temp_grenze = 1.0  # threshold temperature in deg C
+        
+        # Iterate twice: first from zero snow, second from average Dec 31 snow
+        for iterate in range(2):
+            # Add dew to precipitation
+            negative_rad = rad < 0
+            precip[negative_rad] = precip[negative_rad] + (-1) * self.beta * rad[negative_rad]
+            rad[negative_rad] = 0
+            
+            # Initialize snow
+            if iterate == 0:
+                snow_current = 0.0
+            else:
+                # Start from average 31 December snow
+                dec31_indices = np.arange(364, length, 365)  # 365th day (0-indexed: 364)
+                snow_current = np.mean(snow[dec31_indices])
+            
+            # Process each day
+            for i in range(length):
+                # Form snow if precipitation falls below threshold temperature
+                if precip[i] > 0 and temp[i] < (temp_grenze + 1.0):
+                    if temp[i] < (temp_grenze - 1.0):
+                        # All precipitation becomes snow
+                        snow_current += precip[i]
+                        precip[i] = 0.0
+                    else:
+                        # Fraction becomes snow based on temperature
+                        frain = (temp[i] - (temp_grenze - 1.0)) / 2.0
+                        snow_current += precip[i] * (1.0 - frain)
+                        precip[i] = precip[i] * frain
+                
+                # Melt snow if present and temperature above threshold
+                if snow_current > 0 and temp[i] > temp_grenze:
+                    melt = min(snow_current, self.melting * (temp[i] - temp_grenze))
+                    snow_current -= melt
+                    precip[i] += melt
+                
+                snow[i] = snow_current
+        
+        return precip, rad, snow
     
     def spinup(self, precip, rad, n_years=5):
         """Spin up the model to equilibrium."""
@@ -105,7 +172,7 @@ class SimpleWaterBalanceModel:
         else:
             return 0.9 * self.whc
     
-    def run(self, data=None, precip=None, rad=None):
+    def run(self, data=None, precip=None, rad=None, temp=None):
         """
         Run the water balance model.
         
@@ -117,24 +184,41 @@ class SimpleWaterBalanceModel:
             Precipitation data (mm)
         rad : array, optional
             Radiation data (mm water equivalent)
+        temp : array, optional
+            Temperature data (degrees C) - required if use_snow=True
         """
         if data is not None:
             self.data = data
             precip = data['tp'].values.copy()
             rad = data['snr'].values.copy()
+            if 'temp' in data.columns:
+                temp = data['temp'].values.copy()
         
         if precip is None or rad is None:
             raise ValueError("Must provide either data or (precip, rad)")
         
+        if self.use_snow and temp is None:
+            raise ValueError("Temperature data required when use_snow=True")
+        
         precip = precip.copy()
         rad = rad.copy()
+        if temp is not None:
+            temp = temp.copy()
+            self.temp = temp
+        
         self.length = len(precip)
         
-        # Handle negative radiation (dew)
-        negative_rad = rad < 0
-        precip[negative_rad] = precip[negative_rad] + (-1) * self.beta * rad[negative_rad]
-        rad[negative_rad] = 0
-        self.snow = np.zeros(self.length)
+        # Process snow if enabled
+        if self.use_snow:
+            if self.melting is None:
+                raise ValueError("melting parameter required when use_snow=True")
+            precip, rad, self.snow = self.process_snow(precip, rad, temp)
+        else:
+            # Handle negative radiation (dew) without snow
+            negative_rad = rad < 0
+            precip[negative_rad] = precip[negative_rad] + (-1) * self.beta * rad[negative_rad]
+            rad[negative_rad] = 0
+            self.snow = np.zeros(self.length)
         
         # Initialize arrays
         self.soilm = np.full(self.length, np.nan)
@@ -180,5 +264,3 @@ class SimpleWaterBalanceModel:
             'melting': self.melting,
             'length': self.length
         }
-
-
