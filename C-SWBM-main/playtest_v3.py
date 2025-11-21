@@ -8,8 +8,12 @@ files = ['Data/Data_swbm_Germany_new.csv',
 all_results, summary = ca.run_complete_analysis(
     filepaths=files,
     output_dir='complete_outputs',
-    whc=150.0, 
+    whc=420.0, 
     beta=0.8,
+    exp_et=0.5,
+    exp_runoff=4,
+    melting=True,
+    use_snow=True,
     create_plots=True
 )
 

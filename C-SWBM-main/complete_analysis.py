@@ -52,7 +52,7 @@ def run_complete_analysis(filepaths, output_dir='complete_outputs',
     summary_list = []
     
     print("="*70)
-    print("SIMPLE WATER BALANCE MODEL - COMPLETE ANALYSIS")
+    print("SIMPLE WATER BALANCE MODEL - COMPLETE ANALYSIS - LOREM IPSUM")
     print("="*70)
     print(f"\nModel Parameters:")
     print(f"  exp_runoff: {exp_runoff}")
@@ -86,11 +86,11 @@ def run_complete_analysis(filepaths, output_dir='complete_outputs',
             print("  Loading data...")
             data = model.load_data(filepath)
             print(f"    ✓ Loaded {len(data)} days of data LOREM IPSUM")
-            print(f"    Date range: {data['time'].min()} to {data['time'].max()}, this is precip {data['precip'][1]}")
+            print(f"    Date range: {data['time'].min()} to {data['time'].max()}, this is precip {data['tp'][1]}")
             
             # Run model
             print("  Running model...")
-            results = model.run() # i put in data here, 
+            results = model.run(data=data) # i put in data here, 
             print(f"    ✓ Model completed")
             
             # Create results dataframe

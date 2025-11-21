@@ -22,6 +22,7 @@ def prepro(raw_data):
             'ro': raw_data['ro_[m]'] * 24000,
             'le': raw_data['le_[W/m2]'] * (86400 / 2260000),
             'snr': raw_data['snr_[MJ/m2]'] * (1 / 2.26),
+            'temp': raw_data['t2m_[K]'] - 273.15
             }
     return pd.DataFrame(data)
 
