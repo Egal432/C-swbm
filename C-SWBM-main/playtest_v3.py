@@ -12,7 +12,7 @@ all_results, summary = ca.run_complete_analysis(
     beta=0.8,
     exp_et=0.5,
     exp_runoff=4,
-    melting=True,
+    melting=2.0,
     use_snow=True,
     create_plots=True
 )

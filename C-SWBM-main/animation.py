@@ -93,10 +93,11 @@ fixed_params = {
     'use_snow': True
 }
 
+
 # Animate WHC parameter
 filepath = 'Data/Data_swbm_Germany_new.csv'
-whc_range = np.linspace(200, 800, 50)
+whc_range = np.linspace(200, 800, 480)
 anim = create_model_animation(filepath, 'whc', whc_range, fixed_params)
 
 # Save if desired
-anim.save('whc_animation.gif', writer='pillow', fps=2)
+anim.save('whc_animation.gif', writer='pillow', fps=24)
