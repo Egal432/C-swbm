@@ -28,10 +28,6 @@ def main():
                        help='Beta parameter for ET calculation (default: 0.8)')
     parser.add_argument('--whc', type=float, default=150.0,
                        help='Water holding capacity in mm (default: 150.0)')
-    parser.add_argument('--melting', type=float, default=None,
-                       help='Snow melting rate parameter (optional)')
-    parser.add_argument('--use_snow', action='store_true',
-                       help='Enable snow module')
     
     # Plotting options
     parser.add_argument('--start_date', type=str, default=None,
@@ -54,8 +50,6 @@ def main():
     print(f"  exp_et:     {args.exp_et}")
     print(f"  beta:       {args.beta}")
     print(f"  WHC:        {args.whc} mm")
-    print(f"  melting:    {args.melting}")
-    print(f"  use_snow:   {args.use_snow}")
     print("\n" + "="*70)
     
     # Initialize model
@@ -63,10 +57,8 @@ def main():
         exp_runoff=args.exp_runoff,
         exp_et=args.exp_et,
         beta=args.beta,
-        whc=args.whc,
-        melting=args.melting,
-        use_snow=args.use_snow
-    )
+        whc=args.whc
+        )
     
     # Load data
     print("\nLoading data...")

@@ -164,7 +164,6 @@ def run_full_sensitivity(data_file, param_ranges=None, base_params=None):
             'exp_et': 0.5,
             'beta': 0.8,
             'whc': 150.0,
-            'use_snow': False
         }
     
     # Load data

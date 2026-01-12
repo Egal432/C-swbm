@@ -317,7 +317,6 @@ if __name__ == "__main__":
         exp_et=0.5,
         beta=0.8,
         whc=150.0,
-        use_snow=False
     )
     
     # Load your data file
