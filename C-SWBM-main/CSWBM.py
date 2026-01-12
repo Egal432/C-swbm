@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def prepro(raw_data):
     """ Preprocess data for SWBM
     Convert runoff, latent heat flux and solar net radiation to mm.
