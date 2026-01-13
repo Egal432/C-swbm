@@ -358,6 +358,8 @@ def validate_site(filepath, site_name, best_params, output_dir='calibration_resu
     # Save detailed validation results
     results_df = pd.DataFrame({
         'time': data['time'],
+        'precipitation': data['tp'],  # NEW: Add precipitation
+        'radiation': data['snr'],      # NEW: Add radiation
         'observed_sm': data['sm'] if 'sm' in data.columns else np.nan,
         'modeled_sm': results['soilmoisture'],
         'observed_ro': data['ro'] if 'ro' in data.columns else np.nan,

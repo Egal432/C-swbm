@@ -124,14 +124,25 @@ def plot_validation_timeseries(validation_df, site_name, output_dir='calibration
     output_dir : str
         Output directory
     """
-    fig, axes = plt.subplots(4, 1, figsize=(16, 14), sharex=True)
+    fig, axes = plt.subplots(5, 1, figsize=(16, 16), sharex=True)
     fig.suptitle(f'Validation Period (2014-2018) - {site_name}', 
                  fontsize=16, fontweight='bold')
     
     time = pd.to_datetime(validation_df['time'])
     
-    # Soil Moisture
+    # NEW: Plot 0: Precipitation (inverted, at top)
     ax = axes[0]
+    if 'precipitation' in validation_df.columns:
+        ax.bar(time, validation_df['precipitation'], 
+               color='blue', alpha=0.6, width=1.0, label='Precipitation')
+        ax.set_ylabel('Precipitation (mm/day)', fontsize=11)
+        ax.set_title('Precipitation Input', fontsize=12)
+        ax.invert_yaxis()  # Invert so precipitation "falls" from top
+        ax.legend(fontsize=10, loc='lower right')
+        ax.grid(True, alpha=0.3)
+    
+    # Soil Moisture
+    ax = axes[1]
     ax.plot(time, validation_df['observed_sm'], 
             label='Observed', color='green', linewidth=1.5, alpha=0.7)
     ax.plot(time, validation_df['modeled_sm'], 
@@ -142,7 +153,7 @@ def plot_validation_timeseries(validation_df, site_name, output_dir='calibration
     ax.grid(True, alpha=0.3)
     
     # Runoff (with components)
-    ax = axes[1]
+    ax = axes[2]
     ax.plot(time, validation_df['observed_ro'], 
             label='Observed Total', color='blue', linewidth=2, alpha=0.7)
     ax.plot(time, validation_df['modeled_ro'], 
@@ -159,7 +170,7 @@ def plot_validation_timeseries(validation_df, site_name, output_dir='calibration
     ax.grid(True, alpha=0.3)
     
     # ET
-    ax = axes[2]
+    ax = axes[3]
     ax.plot(time, validation_df['observed_et'], 
             label='Observed', color='purple', linewidth=1.5, alpha=0.7)
     ax.plot(time, validation_df['modeled_et'], 
@@ -170,7 +181,7 @@ def plot_validation_timeseries(validation_df, site_name, output_dir='calibration
     ax.grid(True, alpha=0.3)
     
     # Groundwater Storage
-    ax = axes[3]
+    ax = axes[4]
     if 'gw_storage' in validation_df.columns:
         ax.plot(time, validation_df['gw_storage'], 
                 label='Groundwater Storage', color='brown', linewidth=1.5)

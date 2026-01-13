@@ -209,7 +209,7 @@ def compare_models_single_site(filepath, site_name, period='validation',
     }
     
     # For new model, test different alpha values
-    alpha_values = [0.2, 0.3, 0.4]
+    alpha_values = [0.2, 0.4, 0.8]
     
     param_names = list(param_grid.keys())
     param_values = list(param_grid.values())
