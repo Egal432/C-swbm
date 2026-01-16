@@ -345,9 +345,9 @@ def plot_model_comparison(comparison_df, site_name, period, output_dir='model_co
     # Plot 1: Distribution of sum correlations
     ax = axes[0, 0]
     ax.hist(old_data['sum_correlation'].dropna(), bins=30, alpha=0.6, 
-           label='OLD (no GW)', color='red', edgecolor='black')
+           label='OLD (no GW)', color='red', edgecolor='black', density=True)
     ax.hist(new_data['sum_correlation'].dropna(), bins=30, alpha=0.6, 
-           label='NEW (with GW)', color='green', edgecolor='black')
+           label='NEW (with GW)', color='green', edgecolor='black', density=True)
     ax.axvline(old_data['sum_correlation'].max(), color='red', 
               linestyle='--', linewidth=2, label='OLD best')
     ax.axvline(new_data['sum_correlation'].max(), color='green', 
@@ -401,9 +401,9 @@ def plot_model_comparison(comparison_df, site_name, period, output_dir='model_co
     # Plot 4: Runoff RMSE comparison
     ax = axes[1, 1]
     ax.hist(old_data['ro_rmse'].dropna(), bins=30, alpha=0.6, 
-           label='OLD', color='red', edgecolor='black')
+           label='OLD', color='red', edgecolor='black', density = True)
     ax.hist(new_data['ro_rmse'].dropna(), bins=30, alpha=0.6, 
-           label='NEW', color='green', edgecolor='black')
+           label='NEW', color='green', edgecolor='black', density = True)
     ax.axvline(old_data['ro_rmse'].min(), color='red', 
               linestyle='--', linewidth=2, label='OLD best')
     ax.axvline(new_data['ro_rmse'].min(), color='green', 
