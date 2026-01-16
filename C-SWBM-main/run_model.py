@@ -28,7 +28,8 @@ def main():
                        help='Beta parameter for ET calculation (default: 0.8)')
     parser.add_argument('--whc', type=float, default=150.0,
                        help='Water holding capacity in mm (default: 150.0)')
-    
+    parser.add_argument('--delta', type=float, default=0.5,
+                       help='runoff splitting')   
     # Plotting options
     parser.add_argument('--start_date', type=str, default=None,
                        help='Start date for plotting (YYYY-MM-DD)')
@@ -57,7 +58,8 @@ def main():
         exp_runoff=args.exp_runoff,
         exp_et=args.exp_et,
         beta=args.beta,
-        whc=args.whc
+        whc=args.whc,
+        delta=args.delta
         )
     
     # Load data

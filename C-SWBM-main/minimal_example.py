@@ -16,10 +16,11 @@ print("Step 1: Initializing model...")
 
 model = SimpleWaterBalanceModel(
     exp_runoff=2.0,    # Runoff exponent (1-5, higher = more threshold)
-    exp_et=0.5,        # ET exponent (0.1-2, higher = stronger drying effect)
-    beta=0.8,          # Priestley-Taylor coefficient (0.5-1.2)
-    whc=150.0          # Water holding capacity in mm (50-300)
-)
+    exp_et=0.8,        # ET exponent (0.1-2, higher = stronger drying effect)
+    beta=0.6,          # Priestley-Taylor coefficient (0.5-1.2)
+    whc=420.0,         # Water holding capacity in mm (50-300)
+    delta=0.4,
+    )
 
 print("✓ Model initialized")
 
@@ -32,7 +33,7 @@ print("\nStep 2: Loading data...")
 # Load data from CSV file
 # Expected columns: time, latitude, longitude, snr_[MJ/m2], tp_[mm], 
 #                   ro_[m], sm_[m3/m3], le_[W/m2], t2m_[K]
-data = model.load_data('test_data.csv')
+data = model.load_data('Data/Data_swbm_Germany_new.csv')
 
 print(f"✓ Loaded {len(data)} days of data")
 print(f"  Date range: {data['time'].min()} to {data['time'].max()}")

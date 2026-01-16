@@ -42,19 +42,18 @@ class SimpleWaterBalanceModel:
         Beta parameter for ET calculation
     whc : float
         Water holding capacity (mm)
-    alpha : float
+    delta : float
         Fast runoff fraction (0-1). Represents the fraction of excess water
-        that becomes immediate surface runoff. The remainder (1-alpha) percolates
+        that becomes immediate surface runoff. The remainder (1-delta) percolates
         to groundwater storage and contributes to baseflow.
-        Typical values: 0.2-0.4 (default: 0.3)
     """
     
-    def __init__(self, exp_runoff, exp_et, beta, whc, alpha=0.3):
+    def __init__(self, exp_runoff, exp_et, beta, whc, delta=0.3):
         self.exp_runoff = exp_runoff
         self.exp_et = exp_et
         self.beta = beta
         self.whc = whc
-        self.alpha = alpha  # NEW: fast runoff fraction
+        self.delta = delta  # NEW: fast runoff fraction
         
         # Fixed groundwater recession coefficient
         # k_gw = 0.05 means ~14 day half-life (ln(2)/0.05 ≈ 14)
@@ -117,7 +116,7 @@ class SimpleWaterBalanceModel:
             
             # Groundwater calculations (NEW)
             excess = (min(1.0, (soilm[i-1] / self.whc) ** self.exp_runoff)) * precip[i-1]
-            percolation = (1.0 - self.alpha) * excess
+            percolation = (1.0 - self.delta) * excess
             gw_storage[i] = gw_storage[i-1] + percolation - baseflow[i-1]
             baseflow[i] = self.k_gw * gw_storage[i]
         
@@ -205,8 +204,8 @@ class SimpleWaterBalanceModel:
             excess = (min(1.0, (self.soilm[i-1] / self.whc) ** self.exp_runoff)) * precip[i-1]
             
             # NEW: Split into fast and slow components
-            self.fast_runoff[i-1] = self.alpha * excess
-            percolation = (1.0 - self.alpha) * excess
+            self.fast_runoff[i-1] = self.delta * excess
+            percolation = (1.0 - self.delta) * excess
             
             # NEW: Update groundwater storage
             self.gw_storage[i] = self.gw_storage[i-1] + percolation - self.baseflow[i-1]
@@ -235,7 +234,7 @@ class SimpleWaterBalanceModel:
             'exp_et': self.exp_et,
             'beta': self.beta,
             'whc': self.whc,
-            'alpha': self.alpha,                  # NEW
+            'delta': self.delta,                  # NEW
             'k_gw': self.k_gw,                    # NEW
             'length': self.length
         }

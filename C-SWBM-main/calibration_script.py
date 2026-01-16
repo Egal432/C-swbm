@@ -61,7 +61,7 @@ def calculate_metrics(obs, mod):
     }
 
 
-def run_single_simulation(data, whc, exp_runoff, exp_et, beta, alpha):
+def run_single_simulation(data, whc, exp_runoff, exp_et, beta, delta):
     """
     Run model with single parameter combination.
     
@@ -77,7 +77,7 @@ def run_single_simulation(data, whc, exp_runoff, exp_et, beta, alpha):
         ET exponent (γ in assignment)
     beta : float
         Beta parameter (β in assignment)
-    alpha : float
+    delta : float
         Fast runoff fraction (new parameter)
     
     Returns
@@ -94,7 +94,7 @@ def run_single_simulation(data, whc, exp_runoff, exp_et, beta, alpha):
             exp_et=exp_et,
             beta=beta,
             whc=whc,
-            alpha=alpha
+            delta=delta
         )
         
         # Run model
@@ -183,7 +183,7 @@ def calibrate_site(filepath, site_name, output_dir='calibration_results'):
         'exp_runoff': [2.0, 4.0, 8.0],             # α in assignment
         'exp_et': [0.2, 0.5, 0.8],                 # γ in assignment
         'beta': [0.4, 0.6, 0.8],                   # β in assignment
-        'alpha': [0.2, 0.3, 0.4]                   # New parameter (fast runoff fraction)
+        'delta': [0.2, 0.4, 0.8]                   # New parameter (fast runoff fraction)
     }
     
     print(f"\nParameter ranges:")
@@ -195,7 +195,7 @@ def calibrate_site(filepath, site_name, output_dir='calibration_results'):
     param_values = list(param_grid.values())
     combinations = list(product(*param_values))
     n_combinations = len(combinations)
-    
+    print(f"\nParameter Combinations: {combinations}") 
     print(f"\nTotal parameter combinations: {n_combinations}")
     print(f"Expected: 3^5 = 243")
     assert n_combinations == 243, f"Expected 243 combinations, got {n_combinations}"
@@ -209,11 +209,11 @@ def calibrate_site(filepath, site_name, output_dir='calibration_results'):
             print(f"  Progress: {idx}/{n_combinations} ({100*idx/n_combinations:.1f}%)")
         
         # Unpack parameters
-        whc, exp_runoff, exp_et, beta, alpha = combo
+        whc, exp_runoff, exp_et, beta, delta = combo
         
         # Run simulation
         results, metrics = run_single_simulation(
-            data, whc, exp_runoff, exp_et, beta, alpha
+            data, whc, exp_runoff, exp_et, beta, delta
         )
         
         if metrics is not None:
@@ -223,7 +223,7 @@ def calibrate_site(filepath, site_name, output_dir='calibration_results'):
                 'exp_runoff': exp_runoff,
                 'exp_et': exp_et,
                 'beta': beta,
-                'alpha': alpha,
+                'delta': delta,
                 'sum_correlation': metrics['sum_correlation'],
                 'n_variables': metrics['n_variables']
             }
@@ -255,7 +255,7 @@ def calibrate_site(filepath, site_name, output_dir='calibration_results'):
         'exp_runoff': best_row['exp_runoff'],
         'exp_et': best_row['exp_et'],
         'beta': best_row['beta'],
-        'alpha': best_row['alpha']
+        'delta': best_row['delta']
     }
     
     best_metrics = {
@@ -328,7 +328,7 @@ def validate_site(filepath, site_name, best_params, output_dir='calibration_resu
         exp_runoff=best_params['exp_runoff'],
         exp_et=best_params['exp_et'],
         beta=best_params['beta'],
-        alpha=best_params['alpha']
+        delta=best_params['delta']
     )
     
     if metrics is None:
@@ -404,7 +404,7 @@ def generate_performance_table(sites_results, output_dir='calibration_results'):
             'exp_runoff': results['best_params']['exp_runoff'],
             'exp_et': results['best_params']['exp_et'],
             'beta': results['best_params']['beta'],
-            'alpha': results['best_params']['alpha'],
+            'delta': results['best_params']['delta'],
             # Calibration performance
             'calib_sum_corr': results['calib_metrics']['sum_correlation'],
             'calib_sm_corr': results['calib_metrics']['sm_corr'],

@@ -30,7 +30,7 @@ def plot_parameter_sensitivity(all_calibrations, site_name, output_dir='calibrat
     fig.suptitle(f'Parameter Sensitivity Analysis - {site_name}', 
                  fontsize=16, fontweight='bold')
     
-    params = ['whc', 'exp_runoff', 'exp_et', 'beta', 'alpha']
+    params = ['whc', 'exp_runoff', 'exp_et', 'beta', 'delta']
     variables = ['sm_corr', 'ro_corr', 'et_corr']
     var_names = ['Soil Moisture', 'Runoff', 'ET']
     
@@ -85,7 +85,7 @@ def plot_correlation_heatmap(all_calibrations, site_name, output_dir='calibratio
     fig.suptitle(f'Parameter vs Performance Correlation - {site_name}', 
                  fontsize=16, fontweight='bold')
     
-    params = ['whc', 'exp_runoff', 'exp_et', 'beta', 'alpha']
+    params = ['whc', 'exp_runoff', 'exp_et', 'beta', 'delta']
     variables = [('sm_corr', 'Soil Moisture'), 
                  ('ro_corr', 'Runoff'), 
                  ('et_corr', 'ET')]
@@ -292,7 +292,7 @@ def plot_top_combinations(all_calibrations, site_name, n_top=10, output_dir='cal
     
     # Plot 1: Parameter values
     ax = axes[0]
-    params = ['whc', 'exp_runoff', 'exp_et', 'beta', 'alpha']
+    params = ['whc', 'exp_runoff', 'exp_et', 'beta', 'delta']
     x = np.arange(n_top)
     width = 0.15
     
@@ -396,7 +396,7 @@ def plot_cross_site_comparison(performance_table, output_dir='calibration_result
     
     # Plot 3: Best Parameters Comparison
     ax = axes[1, 0]
-    params_to_plot = ['whc', 'exp_runoff', 'exp_et', 'beta', 'alpha']
+    params_to_plot = ['whc', 'exp_runoff', 'exp_et', 'beta', 'delta']
     
     # Normalize parameters for comparison
     param_data = {}

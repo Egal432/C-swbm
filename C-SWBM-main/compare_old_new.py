@@ -17,7 +17,7 @@ sns.set_style("whitegrid")
 class OldSimpleWaterBalanceModel:
     """
     Original model WITHOUT groundwater storage (for comparison).
-    This is the model before adding the alpha parameter.
+    This is the model before adding the delta parameter.
     """
     
     def __init__(self, exp_runoff, exp_et, beta, whc):
@@ -208,16 +208,16 @@ def compare_models_single_site(filepath, site_name, period='validation',
         'beta': [0.4, 0.6, 0.8]
     }
     
-    # For new model, test different alpha values
-    alpha_values = [0.2, 0.4, 0.8]
+    # For new model, test different delta values
+    delta_values = [0.2, 0.4, 0.8]
     
     param_names = list(param_grid.keys())
     param_values = list(param_grid.values())
     base_combinations = list(product(*param_values))
     
-    print(f"\nTesting {len(base_combinations)} base combinations × {len(alpha_values)} alpha values")
-    print(f"Old model: {len(base_combinations)} runs (no alpha)")
-    print(f"New model: {len(base_combinations) * len(alpha_values)} runs (with alpha)")
+    print(f"\nTesting {len(base_combinations)} base combinations × {len(delta_values)} delta values")
+    print(f"Old model: {len(base_combinations)} runs (no delta)")
+    print(f"New model: {len(base_combinations) * len(delta_values)} runs (with delta)")
     
     results_list = []
     
@@ -250,7 +250,7 @@ def compare_models_single_site(filepath, site_name, period='validation',
                 'exp_runoff': exp_runoff,
                 'exp_et': exp_et,
                 'beta': beta,
-                'alpha': np.nan,
+                'delta': np.nan,
                 'sum_correlation': sum_corr,
                 'sm_corr': old_metrics.get('sm', {}).get('correlation', np.nan),
                 'ro_corr': old_metrics.get('ro', {}).get('correlation', np.nan),
@@ -265,15 +265,15 @@ def compare_models_single_site(filepath, site_name, period='validation',
     print("\nRunning NEW model (with groundwater)...")
     count = 0
     for combo in base_combinations:
-        for alpha in alpha_values:
+        for delta in delta_values:
             count += 1
             if count % 50 == 0 or count == 1:
-                print(f"  NEW model progress: {count}/{len(base_combinations) * len(alpha_values)}")
+                print(f"  NEW model progress: {count}/{len(base_combinations) * len(delta_values)}")
             
             whc, exp_runoff, exp_et, beta = combo
             
             try:
-                new_model = SimpleWaterBalanceModel(exp_runoff, exp_et, beta, whc, alpha)
+                new_model = SimpleWaterBalanceModel(exp_runoff, exp_et, beta, whc, delta)
                 new_results = new_model.run(data=data)
                 
                 # Calculate metrics
@@ -293,7 +293,7 @@ def compare_models_single_site(filepath, site_name, period='validation',
                     'exp_runoff': exp_runoff,
                     'exp_et': exp_et,
                     'beta': beta,
-                    'alpha': alpha,
+                    'delta': delta,
                     'sum_correlation': sum_corr,
                     'sm_corr': new_metrics.get('sm', {}).get('correlation', np.nan),
                     'ro_corr': new_metrics.get('ro', {}).get('correlation', np.nan),
@@ -462,7 +462,7 @@ def compare_all_sites(file_dict, output_dir='model_comparison'):
             'old_ro_corr': old_best['ro_corr'],
             'new_ro_corr': new_best['ro_corr'],
             'ro_improvement': new_best['ro_corr'] - old_best['ro_corr'],
-            'best_alpha': new_best['alpha']
+            'best_delta': new_best['delta']
         })
     
     # Create summary table
